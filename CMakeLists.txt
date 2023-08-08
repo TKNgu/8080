@@ -24,6 +24,6 @@ file(GLOB SRC
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRC})
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC) 
-add_custom_target(run ${CMAKE_PROJECT_NAME}
+add_custom_target(run ${CMAKE_PROJECT_NAME} data/gb-test-roms-master/cpu_instrs/cpu_instrs.gb
     DEPENDS ${SAMPLE}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
