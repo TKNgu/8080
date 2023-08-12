@@ -12,6 +12,13 @@ if(BUILD_DEBUG)
     add_definitions(-DDEBUG)
 endif(BUILD_DEBUG)
 
+ExternalProject_Add(nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
+    PREFIX ${CMAKE_SOURCE_DIR}/lib/nlohmann_json
+    CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_SOURCE_DIR}/lib/local)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}/lib/local/include)
 

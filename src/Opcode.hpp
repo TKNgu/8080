@@ -14,7 +14,7 @@ struct Opcode {
 };
 
 void ShowOpcode(Opcode &);
-unsigned ShowOpcode(Opcode &, uint8_t *, unsigned);
+unsigned ShowOpcode(uint8_t *, unsigned);
 unsigned Run(uint8_t[], unsigned);
 unsigned InitOpcode(Opcode *&, std::ifstream &);
 
