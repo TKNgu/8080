@@ -12,6 +12,13 @@ if(BUILD_DEBUG)
     add_definitions(-DDEBUG)
 endif(BUILD_DEBUG)
 
+ExternalProject_Add(nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
+    PREFIX ${CMAKE_SOURCE_DIR}/lib/nlohmann_json
+    CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_SOURCE_DIR}/lib/local)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}/lib/local/include)
 
@@ -24,6 +31,6 @@ file(GLOB SRC
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRC})
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC) 
-add_custom_target(run ${CMAKE_PROJECT_NAME}
+add_custom_target(run ${CMAKE_PROJECT_NAME} data/gb-test-roms-master/cpu_instrs/cpu_instrs.gb
     DEPENDS ${SAMPLE}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
