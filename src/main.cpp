@@ -217,7 +217,8 @@ unsigned char memory[0xffff];
 
 #define HALT []() { return 4u; };
 
-#define COUT_HEX(value) cout << hex << setw(2) << setfill('0') << (int)(value)
+#define COUT_HEX(value) \
+  cout << "0x" << hex << setw(2) << setfill('0') << (int)(value)
 
 function<unsigned()> instructions[256];
 
@@ -637,9 +638,9 @@ int main(int argc, char *argv[]) {
   for (;;) {
     // // if (CPURegister.PC == 0x0216) {
     // cout << "Debug CPU **********" << endl;
-    cout << "PC " << (int)(CPURegister.PC) << endl;
-    cout << "Opcode 0x" << hex << setw(2) << setfill('0')
-         << (int)(memory[CPURegister.PC]) << endl;
+    // cout << "PC " << (int)(CPURegister.PC) << endl;
+    // cout << "Opcode 0x" << hex << setw(2) << setfill('0')
+    //      << (int)(memory[CPURegister.PC]) << endl;
     // // cout << "ZFlag " << (int)(ZFLAG) << endl;
     // // cout << "Memory " << (int)(memory[CPURegister.PC + 1]) << endl;
     // // }
@@ -656,6 +657,23 @@ int main(int argc, char *argv[]) {
     //   cout << "HL chang to data ********** " << endl;
     //   getchar();
     // }
+
+    cout << "****************************" << endl;
+    COUT_HEX(CPURegister.A) << " ";
+    COUT_HEX(CPURegister.F) << endl;
+    COUT_HEX(CPURegister.B) << " ";
+    COUT_HEX(CPURegister.C) << endl;
+    COUT_HEX(CPURegister.D) << " ";
+    COUT_HEX(CPURegister.E) << endl;
+    COUT_HEX(CPURegister.H) << " ";
+    COUT_HEX(CPURegister.L) << endl;
+
+    cout << "PC ";
+    COUT_HEX(CPURegister.PC) << endl;
+    COUT_HEX(memory[CPURegister.PC]) << " ";
+    COUT_HEX(memory[CPURegister.PC + 1]) << " ";
+    COUT_HEX(memory[CPURegister.PC + 2]) << " ";
+    getchar();
 
     instructions[memory[CPURegister.PC++]]();
   }
