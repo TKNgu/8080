@@ -1,3 +1,4 @@
+#include <bitset>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -58,17 +59,17 @@ struct CPURegister {
   uint16_t PC;
 } CPURegister;
 
-#define ZFLAG CPURegister.F |= 0x10000000
-#define ZCLEAR CPURegister.F &= 0x01111111
+#define ZFLAG CPURegister.F |= 0b10000000
+#define ZCLEAR CPURegister.F &= 0b01111111
 
-#define NFLAG CPURegister.F |= 0x01000000
-#define NCLEAR CPURegister.F &= 0x10111111
+#define NFLAG CPURegister.F |= 0b01000000
+#define NCLEAR CPURegister.F &= 0b10111111
 
-#define HFLAG CPURegister.F |= 0x00100000
-#define HCLEAR CPURegister.F &= 0x11011111
+#define HFLAG CPURegister.F |= 0b00100000
+#define HCLEAR CPURegister.F &= 0b11011111
 
-#define CFLAG CPURegister.F |= 0x00010000
-#define CCLEAR CPURegister.F &= 0x11101111
+#define CFLAG CPURegister.F |= 0b00010000
+#define CCLEAR CPURegister.F &= 0b11101111
 
 unsigned char memory[0xffff];
 
@@ -171,12 +172,13 @@ unsigned char memory[0xffff];
     return 4u;            \
   };
 
-#define XOR_R1_R2(R1, R2) \
-  []() {                  \
-    F = 0b00000000;       \
-    R1 ^= R2;             \
-    R1 ? ZCLEAR : ZFLAG;  \
-    return 4u;            \
+#define XOR_R1_R2(R1, R2)           \
+  []() {                            \
+    F = 0b00000000;                 \
+    R1 ^= R2;                       \
+    cout << "XOR R " << R1 << endl; \
+    R1 ? ZCLEAR : ZFLAG;            \
+    return 4u;                      \
   };
 
 #define OR_R1_R2(R1, R2) \
@@ -219,6 +221,11 @@ unsigned char memory[0xffff];
 
 #define COUT_HEX(value) \
   cout << "0x" << hex << setw(2) << setfill('0') << (int)(value)
+
+#define COUT_BIN(value) cout << "0b" << bitset<8>(value)
+
+#define COUT_HEX16(value) \
+  cout << "0x" << hex << setw(4) << setfill('0') << (int)(value)
 
 function<unsigned()> instructions[256];
 
@@ -345,7 +352,7 @@ void LoadInstructions() {
     A = tmp;
     HCLEAR;
     A ? ZCLEAR : ZFLAG;
-    tmp >= 0x0100 ? CFLAG : CCLEAR;
+    tmp >= 0b0100 ? CFLAG : CCLEAR;
     return 4u;
   };
   instructions[0x28] = []() {
@@ -366,7 +373,7 @@ void LoadInstructions() {
   instructions[0x2e] = LD_R_N8(L);
   instructions[0x2f] = []() {
     A ^= 0xff;
-    F |= 0x01100000;
+    F |= 0b01100000;
     return 4u;
   };
   instructions[0x30] = []() {
@@ -403,7 +410,7 @@ void LoadInstructions() {
     return 12u;
   };
   instructions[0x37] = []() {
-    F = (F & 0x10000000) | 0x00010000;
+    F = (F & 0b10000000) | 0b00010000;
     return 4u;
   };
   instructions[0x38] = []() {
@@ -430,8 +437,8 @@ void LoadInstructions() {
   instructions[0x3d] = DEC_R_FLAG(A);
   instructions[0x3e] = LD_R_N8(A);
   instructions[0x3f] = []() {
-    (F & 0x00010000) ? CCLEAR : CFLAG;
-    F &= 0x10010000;
+    (F & 0b00010000) ? CCLEAR : CFLAG;
+    F &= 0b10010000;
     return 4u;
   };
 
@@ -584,11 +591,6 @@ void LoadInstructions() {
     PC = memory[PC] + (memory[PC + 1] << 8);
     return 16u;
   };
-  instructions[0xaf] = []() {
-    A ^= A;
-    ZFLAG;
-    return 4u;
-  };
 }
 
 void BootRom() {
@@ -660,7 +662,7 @@ int main(int argc, char *argv[]) {
 
     cout << "****************************" << endl;
     COUT_HEX(CPURegister.A) << " ";
-    COUT_HEX(CPURegister.F) << endl;
+    COUT_BIN(CPURegister.F) << endl;
     COUT_HEX(CPURegister.B) << " ";
     COUT_HEX(CPURegister.C) << endl;
     COUT_HEX(CPURegister.D) << " ";
@@ -669,7 +671,7 @@ int main(int argc, char *argv[]) {
     COUT_HEX(CPURegister.L) << endl;
 
     cout << "PC ";
-    COUT_HEX(CPURegister.PC) << endl;
+    COUT_HEX16(CPURegister.PC) << endl;
     COUT_HEX(memory[CPURegister.PC]) << " ";
     COUT_HEX(memory[CPURegister.PC + 1]) << " ";
     COUT_HEX(memory[CPURegister.PC + 2]) << " ";
